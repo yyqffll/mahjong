@@ -1,20 +1,30 @@
 <template>
-  <div>x: {{x}}, y:{{y}}</div>
+  <router-view></router-view>
 </template>
 
 <script>
-import getMousePosition from './views/hooks/mouseEvents'
+import { getCurrentInstance } from 'vue'
+import axios from 'axios'
 export default {
   name: 'App',
   setup () {
-    const { x, y } = getMousePosition()
-    return {
-      x,
-      y
-    }
+    const { proxy } = getCurrentInstance()
+    return {}
   }
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+#app {
+  height: 100vh;
+  .eye {
+    display: flex;
+    height: 100vh;
+    & > div {
+      position: relative;
+      width: 50vw;
+      height: 100vh;
+    }
+  }
+}
 </style>
