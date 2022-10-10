@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "concurrently \"npm run serve\" \"npm run start\"",
     "serve": "vue-cli-service serve --open",
-    "start": "nodemon --watch server/**/*.ts --exec \"ts-node\" server/index.ts",
+    "start": "nodemon -e ts --exec \"ts-node\" server/index.ts",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -21,6 +21,7 @@
     "qrcodejs2": "^0.0.2",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
+    "vant": "^3.6.4",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",

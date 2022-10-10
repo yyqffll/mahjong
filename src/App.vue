@@ -15,16 +15,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-#app {
-  height: 100vh;
-  .eye {
-    display: flex;
-    height: 100vh;
-    & > div {
-      position: relative;
-      width: 50vw;
-      height: 100vh;
-    }
-  }
-}
 </style>

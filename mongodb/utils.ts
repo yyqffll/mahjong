@@ -38,6 +38,7 @@ function create(param: Record<string, unknown> | null, schema: any) {
 }
 
 export {
+  checkParam,
   checkExist,
   create
 }
