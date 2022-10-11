@@ -1,5 +1,5 @@
-const devHosturl = 'http://localhost:3000'
-const proHosturl = 'http://124.223.7.93:3000'
+const devHosturl = 'http://localhost:3001'
+const proHosturl = 'http://124.223.7.93:3001'
 const baseUrl = process.env.NODE_ENV === 'development' ? devHosturl : proHosturl
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
   },
   devServer: {
     proxy: {
-      '/api': {
+      '/ecapi': {
         target: baseUrl,
         changeOrigin: true
       }

@@ -37,8 +37,25 @@ function create(param: Record<string, unknown> | null, schema: any) {
   })
 }
 
+function findOne(param: Record<string, unknown> | null, schema: any) {
+  return new Promise((resolve, reject) => {
+    if (checkParam(param)) {
+      reject(new Error('参数不能为空!'))
+    } else {
+      schema.findOne(param).then((data: Record<string, unknown> | null) => {
+        if (checkParam(data)) {
+          reject(new Error('未查询到数据!'))
+        } else {
+          resolve(data)
+        }
+      })
+    }
+  })
+}
+
 export {
   checkParam,
   checkExist,
-  create
+  create,
+  findOne
 }

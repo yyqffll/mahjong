@@ -9,7 +9,10 @@ import {
   Form,
   Field,
   CellGroup,
-  Button
+  Button,
+  PullRefresh,
+  List,
+  Cell
 } from 'vant'
 import 'vant/lib/index.css'
 
@@ -23,5 +26,8 @@ app.use(Form)
 app.use(Field)
 app.use(CellGroup)
 app.use(Button)
+app.use(PullRefresh)
+app.use(List)
+app.use(Cell)
 
 app.use(store).use(router).mount('#app')

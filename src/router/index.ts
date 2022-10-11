@@ -1,7 +1,9 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import home from '../views/home.vue'
 import login from '../views/login.vue'
-import { getToken } from '../libs/utils'
+import { getToken, getLocalStorage } from '../libs/utils'
+import { request } from '@/libs/axios'
+import store from '../store'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -26,14 +28,26 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  const userName = getLocalStorage('userName')
   if (to.name === 'home' || to.name === 'login') {
     next()
   } else {
     if (!getToken) {
-      next({
-        name: 'home'
-      })
+      next({ name: 'home' })
+    } else if (!userName) {
+      next({ name: 'home' })
+    } else if (!store.state.userId) {
+      try {
+        const { success } = await store.dispatch('getUserInfo', { userName })
+        if (success) {
+          next()
+        } else {
+          next({ name: 'home' })
+        }
+      } catch (err) {
+        next({ name: 'home' })
+      }
     } else {
       next()
     }

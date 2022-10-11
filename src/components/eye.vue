@@ -1,21 +1,34 @@
 <template>
-  <div class="fun" id="week" @click="toWeakup">唤醒</div>
-  <div class="fun" id="sleep" @click="toSleep">休眠</div>
-  <div class="fun" id="angry" @click="toAngly">生气</div>
-  <div :class="{'eyeSocket': true, 'eyeSocketAngry': isAngly}" :id="`bigEye-${id}`">
-    <div class="eyeball" :id="id"></div>
-  </div>
+  <div v-if="!target && !canChangeStatus" class="notice">请选择左边的交流对象</div>
+  <template v-else>
+    <div class="fun-group" v-show="canChangeStatus">
+      <van-button type="primary" @click="toWeakup">唤醒</van-button>
+      <van-button type="primary" @click="toSleep">休眠</van-button>
+      <van-button type="danger" @click="toAngly">生气</van-button>
+    </div>
+    <div :class="{'eyeSocket': true, 'eyeSocketAngry': isAngly}" :id="`bigEye-${id}`">
+      <div class="eyeball" :id="id"></div>
+    </div>
+  </template>
 </template>
 
 <script>
-import { getCurrentInstance } from 'vue'
+import { getCurrentInstance, toRefs } from 'vue'
 import BigNumber from 'bignumber.js'
+import { Notify } from 'vant'
 
 export default {
   name: 'eye',
   props: {
     id: {
       default: ''
+    },
+    target: {
+      default: ''
+    },
+    canChangeStatus: {
+      default: true,
+      type: Boolean
     }
   },
   data () {
@@ -34,16 +47,32 @@ export default {
 
     }
   },
+  watch: {
+    target: {
+      handler (val) {
+        if (val) {
+          this.$nextTick(() => {
+            if (this.eyeballChart) return
+            this.init()
+          })
+        }
+      }
+    }
+  },
   mounted () {
-    const { proxy } = getCurrentInstance()
-    this.bigEye = document.getElementById(`bigEye-${this.id}`)
-    this.eyeball = document.getElementById(this.id)
-    this.eyeballChart = proxy.$echarts.init(this.eyeball)
-
-    this.getEyeballChart()
-    this.toWeakup()
+    if (this.canChangeStatus) {
+      this.init()
+    }
   },
   methods: {
+    init () {
+      // const { proxy } = getCurrentInstance()
+      this.bigEye = document.getElementById(`bigEye-${this.id}`)
+      this.eyeball = document.getElementById(this.id)
+      this.eyeballChart = this.$echarts.init(this.eyeball)
+      this.getEyeballChart()
+      this.toWeakup()
+    },
     getEyeballChart () {
       this.eyeballChart.setOption({
         series: [
@@ -125,7 +154,6 @@ export default {
         const c = values[2]
         const d = values[3]
         let scale = Math.sqrt(a * a + b * b)
-        console.log('Scale: ' + scale)
         const scaleTimer = setInterval(() => {
           if (scale > 1) {
             const scaleFlag = Number(this.bFun(scale).minus(0.0005).toString())
@@ -133,7 +161,6 @@ export default {
           } else {
             clearInterval(scaleTimer)
           }
-          console.log(scale)
           this.bigEye.style.transform = `scale(${scale})`
         }, 0)
       }
@@ -188,6 +215,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.notice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  height: 100%;
+}
 .fun {
   color: #fff;
   cursor: pointer;
