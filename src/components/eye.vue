@@ -284,7 +284,7 @@ export default {
         if (linkPerson.userName === props.target.userName) {
           ctx.emit('update:target', linkPerson)
         }
-        Notify({ type: 'success', message: `${linkPerson.userName}改了状态,${props.target.userMood}` })
+        Notify({ type: 'success', message: `${linkPerson.userName}改了状态,${linkPerson.userMood}` })
       })
     })
     return {
