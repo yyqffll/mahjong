@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { reactive, toRefs, getCurrentInstance, nextTick, computed, watch, onMounted } from 'vue'
+import { reactive, toRefs, getCurrentInstance, nextTick, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import BigNumber from 'bignumber.js'
 import { Notify } from 'vant'
@@ -233,9 +233,11 @@ export default {
         eyeModel.eyeball = document.getElementById(props.id)
         eyeModel.eyeballChart = proxy.$echarts.init(eyeModel.eyeball)
         eyeModel.getEyeballChart()
-        window.onresize = () => {
-          eyeModel.eyeballChart.resize()
-        }
+        console.log(eyeModel.eyeballChart, ' eyeModel.eyeballChart')
+        window.addEventListener('resize', eyeModel.resize)
+      },
+      resize: () => {
+        eyeModel.eyeballChart.resize()
       }
     })
     const toEyeModel = toRefs(eyeModel)
@@ -286,6 +288,9 @@ export default {
         }
         Notify({ type: 'success', message: `${linkPerson.userName}改了状态,${linkPerson.userMood}` })
       })
+    })
+    onUnmounted(() => {
+      window.removeEventListener('resize', eyeModel.resize)
     })
     return {
       userData,
