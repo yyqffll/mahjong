@@ -11,10 +11,13 @@
         >
           <van-cell
             class="contact-person"
-            :class="{'contact-person-inline': item.userStatus === 'loginIn', 'choose-contact-person': item.userName === contactPerson}"
+            :class="{
+              'contact-person-inline': chatPerson.indexOf(item.userName) > -1,
+              'choose-contact-person': contactPerson && item.userName === contactPerson.userName
+            }"
             v-for="item in contactPersonList"
             :key="item.userId"
-            @click="chooseContactPerson(item)"
+            @click="chooseContactPerson(item, index)"
           >
             <span class="light"></span>
             <span>{{item.userName}}</span>
@@ -34,7 +37,7 @@
 </template>
 
 <script>
-import { toRefs, reactive, getCurrentInstance } from 'vue'
+import { toRefs, reactive, getCurrentInstance, computed } from 'vue'
 import { useStore } from 'vuex'
 import eye from '@/components/eye'
 export default {
@@ -45,8 +48,11 @@ export default {
   setup () {
     const { proxy } = getCurrentInstance()
     const store = useStore()
+    const chatPerson = computed(() => {
+      return store.state.chatPerson
+    })
     const contactPersonModel = reactive({
-      contactPerson: '',
+      contactPerson: null,
       contactPersonSearchLoading: false,
       contactPersonListLoading: false,
       contactPersonListFinished: false,
@@ -73,6 +79,11 @@ export default {
             } else {
               contactPersonModel.contactPersonListFinished = false
             }
+            contactPersonModel.contactPersonList.forEach(contactPerson => {
+              if (contactPerson.userStatus === 'loginIn') {
+                proxy.$store.commit('setChatPerson', contactPerson.userName)
+              }
+            })
           })
         })
       },
@@ -82,12 +93,21 @@ export default {
           contactPersonModel.contactPersonSearchLoading = false
         })
       },
-      chooseContactPerson: (item) => {
-        contactPersonModel.contactPerson = item.userName
+      chooseContactPerson: (item, index) => {
+        proxy.$axios({
+          url: '/ecapi/user/findOne',
+          data: {
+            userName: item.userName
+          }
+        }).then(res => {
+          contactPersonModel.contactPerson = res.data
+          contactPersonModel.contactPersonList[index] = res.data
+        })
       }
     })
     const toJyListQueryModel = toRefs(contactPersonModel)
     return {
+      chatPerson,
       ...toJyListQueryModel
     }
   }
@@ -161,13 +181,10 @@ export default {
       // background: black;
       /deep/.fun-group {
         margin-top: 32px;
-        .van-button {
-          margin: 0 16px;
-        }
       }
     }
     .contact-person {
-      height: calc(26% - 1px);
+      height: calc(39% - 1px);
       border-bottom: 1px solid #fff;
     }
     .myself {

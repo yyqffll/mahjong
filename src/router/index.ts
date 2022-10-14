@@ -1,8 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import home from '../views/home.vue'
 import login from '../views/login.vue'
-import { getToken, getLocalStorage } from '../libs/utils'
-import { request } from '@/libs/axios'
+import { getToken, getLocalStorage, setLocalStorage } from '../libs/utils'
 import store from '../store'
 
 const routes: Array<RouteRecordRaw> = [

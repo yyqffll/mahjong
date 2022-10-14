@@ -1,24 +1,74 @@
 <template>
   <div class="main-header">
-    <span>眼神</span>
-    <span>{{userName}}</span>
+    <van-cell center>眼神</van-cell>
+    <van-cell center>{{userName}}</van-cell>
   </div>
   <div class="main-container">
-    <router-view></router-view>
+    <router-view v-if="isRouterActive"></router-view>
   </div>
 </template>
 
 <script>
-import { onMounted, computed, ref, nextTick } from 'vue'
+import { computed, onMounted, onUnmounted, getCurrentInstance, ref, provide, nextTick } from 'vue'
 import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import {
+  setLocalStorage
+} from '@/libs/utils'
+import { Notify } from 'vant'
 export default {
   name: 'App',
   setup () {
+    const { proxy } = getCurrentInstance()
     const store = useStore()
+    const route = useRoute()
+    const isRouterActive = ref(true)
+    const reload = () => {
+      isRouterActive.value = false
+      nextTick(() => {
+        isRouterActive.value = true
+      })
+    }
+    provide('reload', reload)
+
     const userName = computed(() => {
+      if (store.state.userName) {
+        // 用户登录则把状态分发给其他用户
+        proxy.$socket.emit('linkPersonIn', userData.value)
+        // 更改登录状态
+        if (userData.value?.userStatus !== 'loginIn') {
+          proxy.$axios({
+            url: '/ecapi/user/update',
+            data: Object.assign({}, userData.value, { userStatus: 'loginIn' })
+          })
+        }
+      }
       return store.state.userName
     })
+    const userData = computed(() => {
+      return store.state.userData
+    })
+    const routeName = computed(() => {
+      return route.name
+    })
+    const loginoutMobile = () => {
+      setLocalStorage('loginoutMobile', 'loginoutMobile')
+    }
     onMounted(async () => {
+      // 监听其他登录用户
+      proxy.$socket.on('updateLinkPersonIn', (linkPerson) => {
+        if (routeName.value === 'chat') {
+          Notify({ type: 'success', message: `${linkPerson.userName}登录` })
+        }
+        proxy.$store.commit('setChatPerson', linkPerson.userName)
+      })
+      // 监听其他退出用户
+      proxy.$socket.on('updateLinkPersonOut', linkPerson => {
+        if (routeName.value === 'chat') {
+          Notify({ type: 'success', message: `${linkPerson.userName}退出` })
+        }
+        proxy.$store.commit('delChatPerson', linkPerson.userName)
+      })
       // 禁止双指放大
       document.documentElement.addEventListener('touchstart', function (event) {
         if (event.touches.length > 1) {
@@ -35,11 +85,21 @@ export default {
         lastTouchEnd = now
       }, { passive: false })
     })
+    onUnmounted(() => {
+      proxy.$socket.removeAllListeners('updateLinkPersonIn')
+      proxy.$socket.removeAllListeners('updateLinkPersonOut')
+    })
     return {
-      userName
+      isRouterActive,
+      reload,
+      userName,
+      userData,
+      routeName,
+      loginoutMobile
     }
-  }
+  },
 }
+
 </script>
 
 <style lang="less" scoped>
@@ -51,6 +111,18 @@ export default {
   justify-content: space-between;
   border-bottom: 1px solid #b5b2b2;
   padding: 0 24px;
+  .van-cell {
+    padding: 0;
+    font-size: 18px;
+    &:last-child {
+      /deep/.van-cell__value {
+        text-align: end;
+      }
+    }
+    &::after {
+      border: none;
+    }
+  }
 }
 .main-container {
   height: calc(100% - 60px);

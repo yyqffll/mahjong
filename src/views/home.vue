@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <p>请扫描二维码登录</p>
+    <van-cell>请扫描二维码登录</van-cell>
     <div id="qrcode"></div>
   </div>
 </template>
@@ -46,9 +46,16 @@ export default {
   box-shadow: 0px 0px 8px #5a5a5a;
   box-sizing: border-box;
   padding: 16px 0;
-  p {
-    text-align: center;
+  .van-cell {
+    padding: 0;
+    background: transparent;
+    line-height: 1;
+    font-size: 18px;
+    /deep/.van-cell__value {
+      text-align: center;
+    }
   }
+
   #qrcode {
     padding: 16px;
     /deep/img {

@@ -122,4 +122,39 @@ router.post('/user/find', (req, res) => {
   })
 })
 
+router.post('/user/update', (req, res) => {
+  User.findOne({ userName: req.body.userName }).then((data: any) => {
+    console.log(req.body, 'req.body:update')
+    if (!checkParam(data)) {
+      User.findByIdAndUpdate({
+        _id: data._id
+      }, {
+        userStatus: req.body?.userStatus,
+        userMood: req.body?.userMood
+      }, {
+        new: true
+      }).then(data => {
+        res.json({
+          success: true,
+          msg: '修改状态成功!',
+          data
+        })
+      }).catch(err => {
+        res.json({
+          success: false,
+          msg: '修改状态失败!',
+          data: {
+            err
+          }
+        })
+      })
+    } else {
+      res.json({
+        success: false,
+        msg: '异常错误,请联系管理员'
+      })
+    }
+  })
+})
+
 export default router

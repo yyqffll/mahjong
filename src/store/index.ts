@@ -3,7 +3,8 @@ import { request } from '@/libs/axios'
 import {
   getToken,
   setToken,
-  setLocalStorage
+  setLocalStorage,
+  delLocalStorage
 } from '@/libs/utils'
 export default createStore({
   state: {
@@ -12,6 +13,8 @@ export default createStore({
     userName: '',
     userStatus: '',
     userMood: '',
+    userData: null,
+    chatPerson: [] as string[]
   },
   mutations: {
     setToken(state, token) {
@@ -29,6 +32,19 @@ export default createStore({
     },
     setUserMood(state, userMood) {
       state.userMood = userMood
+    },
+    setUserData(state, userData) {
+      state.userData = userData
+    },
+    setChatPerson(state, chatPerson) {
+      state.chatPerson.indexOf(chatPerson) < 0 && state.chatPerson.push(chatPerson)
+    },
+    delChatPerson(state, chatPerson) {
+      console.log(state.chatPerson, '1', chatPerson)
+      if (state.chatPerson.indexOf(chatPerson) > -1) {
+        state.chatPerson.splice(state.chatPerson.indexOf(chatPerson), 1)
+      }
+      console.log(state.chatPerson, '2')
     }
   },
   actions: {
@@ -46,7 +62,9 @@ export default createStore({
           commit('setUserName', res.data.userName)
           commit('setUserStatus', res.data.userStatus)
           commit('setUserMood', res.data.userMood)
+          commit('setUserData', res.data)
           setLocalStorage('userName', res.data.userName)
+          // sessionStorage.setItem('refresh', 'refresh')
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -65,6 +83,7 @@ export default createStore({
           commit('setUserName', res.data.userName)
           commit('setUserStatus', res.data.userStatus)
           commit('setUserMood', res.data.userMood)
+          commit('setUserData', res.data)
           resolve(res)
         }).catch(err => {
           reject(err)

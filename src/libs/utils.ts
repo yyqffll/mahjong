@@ -41,3 +41,7 @@ export const getLocalStorage = (key: string) => {
     return localStorage[key]
   }
 }
+
+export const delLocalStorage = (key: string) => {
+  localStorage.removeItem(key)
+}
