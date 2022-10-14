@@ -2,7 +2,7 @@
   <van-cell v-if="!target && !canChangeStatus" class="notice" center>请选择左边的交流对象</van-cell>
   <template v-else>
     <div class="fun-group" v-show="canChangeStatus">
-      <van-button type="primary" @click="toWeakup(true, 'week', userData)">唤醒</van-button>
+      <van-button type="primary" @click="toWeakup(true, 'awake', userData)">唤醒</van-button>
       <van-button type="primary" @click="toSleep(true, 'sleep', userData)">休眠</van-button>
       <van-button type="danger" @click="toAngly(true, 'angry', userData)">生气</van-button>
     </div>
@@ -148,7 +148,7 @@ export default {
             flag = await controlModel.toChangeMood(userMood, userData)
           }
           if (!flag.success) return
-          controlModel.toWeakup(false, 'week')
+          controlModel.toWeakup(false, 'awake')
           controlModel.setAngry()
         } catch (err) {
           Notify({ type: 'danger', message: err.msg })
@@ -249,8 +249,8 @@ export default {
             }
             if (props.canChangeStatus) return
             switch (val.userMood) {
-              case ('week'):
-                controlModel.toWeakup(false, 'week', val)
+              case ('awake'):
+                controlModel.toWeakup(false, 'awake', val)
                 break
               case ('sleep'):
                 controlModel.toSleep(false, 'sleep', val)
@@ -268,8 +268,8 @@ export default {
       if (props.canChangeStatus) {
         eyeModel.init()
         switch (userData.value.userMood) {
-          case ('week'):
-            controlModel.toWeakup(false, 'week', userData.value)
+          case ('awake'):
+            controlModel.toWeakup(false, 'awake', userData.value)
             break
           case ('sleep'):
             controlModel.toSleep(false, 'sleep', userData.value)

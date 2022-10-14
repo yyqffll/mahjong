@@ -17,7 +17,7 @@ router.post('/user/login', (req, res) => {
       create(Object.assign(req.body, {
         userId: v4(),
         userStatus: 'loginOut',
-        userMood: 'week'
+        userMood: 'awake'
       }), User).then((data: any) => {
         User.findByIdAndUpdate({
           _id: data._id
