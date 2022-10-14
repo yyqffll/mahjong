@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { computed, onMounted, onUnmounted, getCurrentInstance, ref, provide, nextTick } from 'vue'
+import { computed, watch, onMounted, onUnmounted, getCurrentInstance, ref, provide, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import {
@@ -32,17 +32,6 @@ export default {
     provide('reload', reload)
 
     const userName = computed(() => {
-      if (store.state.userName) {
-        // 用户登录则把状态分发给其他用户
-        proxy.$socket.emit('linkPersonIn', userData.value)
-        // 更改登录状态
-        if (userData.value?.userStatus !== 'loginIn') {
-          proxy.$axios({
-            url: '/ecapi/user/update',
-            data: Object.assign({}, userData.value, { userStatus: 'loginIn' })
-          })
-        }
-      }
       return store.state.userName
     })
     const userData = computed(() => {
@@ -54,20 +43,37 @@ export default {
     const loginoutMobile = () => {
       setLocalStorage('loginoutMobile', 'loginoutMobile')
     }
+    watch(
+      userName,
+      val => {
+        console.log(val, 'val')
+        if (val) {
+          // 用户登录则把状态分发给其他用户
+          proxy.$socket.emit('linkPersonIn', userData.value)
+          // 更改登录状态
+          if (userData.value?.userStatus !== 'loginIn') {
+            proxy.$axios({
+              url: '/ecapi/user/update',
+              data: Object.assign({}, userData.value, { userStatus: 'loginIn' })
+            })
+          }
+        }
+      }
+    )
     onMounted(async () => {
       // 监听其他登录用户
       proxy.$socket.on('updateLinkPersonIn', (linkPerson) => {
         if (routeName.value === 'chat') {
           Notify({ type: 'success', message: `${linkPerson.userName}登录` })
         }
-        proxy.$store.commit('setChatPerson', linkPerson.userName)
+        store.commit('setChatPerson', linkPerson.userName)
       })
       // 监听其他退出用户
       proxy.$socket.on('updateLinkPersonOut', linkPerson => {
         if (routeName.value === 'chat') {
           Notify({ type: 'success', message: `${linkPerson.userName}退出` })
         }
-        proxy.$store.commit('delChatPerson', linkPerson.userName)
+        store.commit('delChatPerson', linkPerson.userName)
       })
       // 禁止双指放大
       document.documentElement.addEventListener('touchstart', function (event) {

@@ -27,10 +27,10 @@
     </div>
     <div class="chat-main">
       <div class="contact-person">
-        <eye id="contactPersonfEye" :canChangeStatus="false" :target="contactPerson"></eye>
+        <eye id="contactPersonfEye" :canChangeStatus="false" v-model:target="contactPerson"></eye>
       </div>
       <div class="myself">
-        <eye id="myselfEye" :target="contactPerson"></eye>
+        <eye id="myselfEye" v-model:target="contactPerson"></eye>
       </div>
     </div>
   </div>
@@ -105,10 +105,10 @@ export default {
         })
       }
     })
-    const toJyListQueryModel = toRefs(contactPersonModel)
+    const toContactPersonModel = toRefs(contactPersonModel)
     return {
       chatPerson,
-      ...toJyListQueryModel
+      ...toContactPersonModel
     }
   }
 }

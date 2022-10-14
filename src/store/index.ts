@@ -3,8 +3,7 @@ import { request } from '@/libs/axios'
 import {
   getToken,
   setToken,
-  setLocalStorage,
-  delLocalStorage
+  setLocalStorage
 } from '@/libs/utils'
 export default createStore({
   state: {
@@ -40,11 +39,9 @@ export default createStore({
       state.chatPerson.indexOf(chatPerson) < 0 && state.chatPerson.push(chatPerson)
     },
     delChatPerson(state, chatPerson) {
-      console.log(state.chatPerson, '1', chatPerson)
       if (state.chatPerson.indexOf(chatPerson) > -1) {
         state.chatPerson.splice(state.chatPerson.indexOf(chatPerson), 1)
       }
-      console.log(state.chatPerson, '2')
     }
   },
   actions: {

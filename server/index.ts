@@ -22,11 +22,14 @@ io.on('connection', (socket: {
     socket.linkPerson = linkPerson
     // 通知所有客户端（除了自己）更新在线聊天成员
     socket.broadcast.emit('updateLinkPersonIn', linkPerson)
+    UserModel.findOne({ userName: linkPerson.userName }).then((data: any) => {
+      UserModel.findByIdAndUpdate({ _id: data._id }, { userStatus: 'loginIn' }, { new: true })
+    })
   })
-  socket.on('sendMood', mood => {
-    console.log(mood, '状态')
+  socket.on('sendMood', linkPerson => {
+    console.log(linkPerson.userMood, `${linkPerson.userName}更改了状态`)
     // 通知所有客户端（除了自己）更新心情
-    socket.broadcast.emit('updateMood', mood)
+    socket.broadcast.emit('updateMood', linkPerson)
   })
   socket.on('disconnect', () => {
     if (!socket.linkPerson?.userName) return
@@ -34,15 +37,7 @@ io.on('connection', (socket: {
     // 通知所有客户端（除了自己）更新在线聊天成员
     socket.broadcast.emit('updateLinkPersonOut', socket.linkPerson)
     UserModel.findOne({ userName: socket.linkPerson.userName }).then((data: any) => {
-      UserModel.findByIdAndUpdate({
-        _id: data._id
-      }, {
-        userStatus: 'loginOut'
-      }, {
-        new: true
-      }).then(data => {
-        console.log(data)
-      })
+      UserModel.findByIdAndUpdate({ _id: data._id }, { userStatus: 'loginOut' }, { new: true })
     })
   })
 })
