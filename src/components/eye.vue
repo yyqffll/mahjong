@@ -322,6 +322,7 @@ export default {
   left: calc(50% - 75px);
   top: calc(50% - 75px);
   width: 150px;
+  height: 150px;
   aspect-ratio: 1;
   border-radius: 50%;
   border: 4px solid rgb(41, 104, 217);
