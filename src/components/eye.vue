@@ -233,7 +233,6 @@ export default {
         eyeModel.eyeball = document.getElementById(props.id)
         eyeModel.eyeballChart = proxy.$echarts.init(eyeModel.eyeball)
         eyeModel.getEyeballChart()
-        console.log(eyeModel.eyeballChart, ' eyeModel.eyeballChart')
         window.addEventListener('resize', eyeModel.resize)
       },
       resize: () => {

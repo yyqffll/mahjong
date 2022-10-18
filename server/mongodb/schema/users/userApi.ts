@@ -124,7 +124,6 @@ router.post('/user/find', (req, res) => {
 
 router.post('/user/update', (req, res) => {
   User.findOne({ userName: req.body.userName }).then((data: any) => {
-    console.log(req.body, 'req.body:update')
     if (!checkParam(data)) {
       User.findByIdAndUpdate({
         _id: data._id

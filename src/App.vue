@@ -46,7 +46,6 @@ export default {
     watch(
       userName,
       val => {
-        console.log(val, 'val')
         if (val) {
           // 用户登录则把状态分发给其他用户
           proxy.$socket.emit('linkPersonIn', userData.value)

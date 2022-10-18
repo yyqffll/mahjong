@@ -18,7 +18,6 @@ io.on('connection', (socket: {
   linkPerson: any,
 }) => {
   socket.on('linkPersonIn', linkPerson => {
-    console.log(linkPerson.userName, '已登录')
     socket.linkPerson = linkPerson
     // 通知所有客户端（除了自己）更新在线聊天成员
     socket.broadcast.emit('updateLinkPersonIn', linkPerson)
@@ -27,13 +26,11 @@ io.on('connection', (socket: {
     })
   })
   socket.on('sendMood', linkPerson => {
-    console.log(linkPerson.userMood, `${linkPerson.userName}更改了状态`)
     // 通知所有客户端（除了自己）更新心情
     socket.broadcast.emit('updateMood', linkPerson)
   })
   socket.on('disconnect', () => {
     if (!socket.linkPerson?.userName) return
-    console.log(socket.linkPerson.userName, '已退出')
     // 通知所有客户端（除了自己）更新在线聊天成员
     socket.broadcast.emit('updateLinkPersonOut', socket.linkPerson)
     UserModel.findOne({ userName: socket.linkPerson.userName }).then((data: any) => {

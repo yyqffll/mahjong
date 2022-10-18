@@ -42,7 +42,6 @@ export default {
           router.replace('/chat')
         }
       }).catch(err => {
-        console.log(err)
         Notify(err.msg)
       })
     }
