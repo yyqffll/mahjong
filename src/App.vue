@@ -60,6 +60,24 @@ export default {
       }
     )
     onMounted(async () => {
+      // pc端 || 移动端 适配
+      (function (doc, win) {
+        const docEl = doc.documentElement
+        const resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize'
+        const recalc = function () {
+          const clientWidth = docEl.clientWidth
+          if (!clientWidth) return
+          if (clientWidth >= 640) {
+            docEl.style.fontSize = '48px'
+          } else {
+            docEl.style.fontSize = '37.5px'
+          }
+        }
+
+        if (!doc.addEventListener) return
+        win.addEventListener(resizeEvt, recalc, false)
+        doc.addEventListener('DOMContentLoaded', recalc, false)
+      })(document, window)
       // 监听其他登录用户
       proxy.$socket.on('updateLinkPersonIn', (linkPerson) => {
         if (routeName.value === 'chat') {
@@ -83,7 +101,7 @@ export default {
       // 禁止双击放大
       let lastTouchEnd = 0
       document.documentElement.addEventListener('touchend', function (event) {
-        var now = Date.now()
+        const now = Date.now()
         if (now - lastTouchEnd <= 300) {
           event.preventDefault()
         }
